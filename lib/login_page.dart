@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:suramadu_app/home_page.dart';
+import 'package:dio/dio.dart';
 
 class LoginPage extends StatefulWidget {
   static String tag = 'login-page';
@@ -50,8 +53,15 @@ class _LoginPageState extends State<LoginPage> {
         child: MaterialButton(
           minWidth: 200.0,
           height: 42.0,
-          onPressed: () {
-            Navigator.of(context).pushNamed(HomePage.tag);
+          onPressed: () async {
+//            Navigator.of(context).pushNamed(HomePage.tag);
+            Response response;
+            Dio dio = new Dio();
+            dio.options.baseUrl = "https://jsonplaceholder.typicode.com";
+            response = await dio.post("/todos/1", data: json.encode({"id": 12, "name": "wendu"}));
+            print(response.data.toString());
+            print(response.data.stream);
+
           },
           color: Colors.lightBlueAccent,
           child: Text('Log In', style: TextStyle(color: Colors.white)),
