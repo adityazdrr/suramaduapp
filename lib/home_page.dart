@@ -26,10 +26,6 @@ class HomePage extends StatelessWidget {
 
     final lorem = Padding(
       padding: EdgeInsets.all(8.0),
-      child: Text(
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec hendrerit condimentum mauris id tempor. Praesent eu commodo lacus. Praesent eget mi sed libero eleifend tempor. Sed at fringilla ipsum. Duis malesuada feugiat urna vitae convallis. Aliquam eu libero arcu.',
-        style: TextStyle(fontSize: 16.0, color: Colors.white),
-      ),
     );
 
     final body = Container(
@@ -41,13 +37,67 @@ class HomePage extends StatelessWidget {
           Colors.lightBlueAccent,
         ]),
       ),
-      child: Column(
-        children: <Widget>[alucard, welcome, lorem],
+      child: ListView(
+        children: <Widget>[
+          ListTile(
+            title: Text('Map'),
+          ),
+          ListTile(
+            title: Text('Album'),
+          ),
+          ListTile(
+            title: Text('Phone'),
+          ),
+        ],
       ),
     );
 
     return Scaffold(
       body: body,
+      drawer: Drawer(
+        // Add a ListView to the drawer. This ensures the user can scroll
+        // through the options in the drawer if there isn't enough vertical
+        // space to fit everything.
+        child: ListView(
+          // Important: Remove any padding from the ListView.
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              child: Text('Drawer Header'),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+            ),
+            ListTile(
+              title: Text('Dashboard'),
+              onTap: () {
+                // Update the state of the app
+                // ...
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Text('Surat Masuk'),
+              onTap: () {
+                // Update the state of the app
+                // ...
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Text('Surat Keluar'),
+              onTap: () {
+                // Update the state of the app
+                // ...
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

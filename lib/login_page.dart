@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:suramadu_app/home_page.dart';
 import 'package:dio/dio.dart';
 
+import 'helper/ApiHelper.dart' as Api;
+
 class LoginPage extends StatefulWidget {
   static String tag = 'login-page';
   @override
@@ -11,6 +13,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _nipController = new TextEditingController();
+  final TextEditingController _passwordController = new TextEditingController();
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     final logo = Hero(
@@ -22,10 +29,10 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
 
-    final email = TextFormField(
+    final email = TextField(
       keyboardType: TextInputType.emailAddress,
       autofocus: false,
-      initialValue: 'alucard@gmail.com',
+      controller: _nipController,
       decoration: InputDecoration(
         hintText: 'Email',
         contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
@@ -33,10 +40,10 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
 
-    final password = TextFormField(
+    final password = TextField(
       autofocus: false,
-      initialValue: 'some password',
       obscureText: true,
+      controller: _passwordController,
       decoration: InputDecoration(
         hintText: 'Password',
         contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
@@ -53,16 +60,7 @@ class _LoginPageState extends State<LoginPage> {
         child: MaterialButton(
           minWidth: 200.0,
           height: 42.0,
-          onPressed: () async {
-//            Navigator.of(context).pushNamed(HomePage.tag);
-            Response response;
-            Dio dio = new Dio();
-            dio.options.baseUrl = "https://jsonplaceholder.typicode.com";
-            response = await dio.post("/todos/1", data: json.encode({"id": 12, "name": "wendu"}));
-            print(response.data.toString());
-            print(response.data.stream);
-
-          },
+          onPressed:() => doLogin(),
           color: Colors.lightBlueAccent,
           child: Text('Log In', style: TextStyle(color: Colors.white)),
         ),
@@ -78,6 +76,7 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Colors.white,
       body: Center(
         child: ListView(
@@ -96,6 +95,57 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  void doLogin() async {
+    print("login");
+    try {
+
+      print(Api.URL_LOGIN);
+
+      FormData formData = new FormData.fromMap({
+        'nip': _nipController.text,
+        'pass': _passwordController.text,
+      });
+
+      Response response = await Dio().post(
+        Api.URL_LOGIN,
+        data: formData,
+      );
+
+      Map<String, dynamic> res = json.decode(response.toString());
+      print(response.toString());
+
+      if(res['meta']['code'] == 200){
+        Navigator.of(context).pushReplacement(new MaterialPageRoute(
+            builder: (BuildContext context) => HomePage()));
+      }else{
+        showInSnackBar(res['meta']['message']);
+      }
+
+
+    } catch (e) {
+      print(e);
+      showInSnackBar("Server bermasalah!!coeg.");
+    }
+  }
+
+  void showInSnackBar(String value) {
+    print(value);
+    FocusScope.of(context).requestFocus(new FocusNode());
+    _scaffoldKey.currentState?.removeCurrentSnackBar();
+    _scaffoldKey.currentState.showSnackBar(new SnackBar(
+      content: new Text(
+        value,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 14.0,
+        ),
+      ),
+      backgroundColor: Colors.blue,
+      duration: Duration(seconds: 3),
+    ));
   }
 }
 
